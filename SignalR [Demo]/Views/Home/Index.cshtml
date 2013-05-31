@@ -1,0 +1,102 @@
+﻿<div style="margin: 0; width: 100%; height: 100%;">
+    <canvas id="canvas" width="400" height="400" style="cursor: default;"></canvas>
+</div>
+@section scripts
+{
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-1.1.1.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(function () {
+            "use strict";
+
+            var prevX, prevY;
+            var currX, currY;
+            var flag;
+
+            // Drawing stuff
+
+            var hub = $.connection.drawHub;
+            $.connection.hub.start().done();
+
+            hub.client.executeCommand = function (pX, pY, cX, cY) {
+
+                console.log(this);
+
+                prevX = pX;
+                prevY = pY;
+                currX = cX;
+                currY = cY;
+
+                draw();
+            }
+
+
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+
+            var $parentDiv = $("#canvas").parent("div");
+
+            canvas.width = $parentDiv.width();
+            canvas.height = $parentDiv.height();
+
+            canvas.addEventListener("mousemove", function (e) {
+                findxy('move', e.clientX, e.clientY)
+            }, false);
+
+            canvas.addEventListener("mousedown", function (e) {
+                findxy('down', e.clientX, e.clientY)
+            }, false);
+
+            canvas.addEventListener("mouseup", function (e) {
+                findxy('up', e.clientX, e.clientY)
+            }, false);
+
+            canvas.addEventListener("mouseout", function (e) {
+                findxy('out', e.clientX, e.clientY)
+            }, false);
+
+            function findxy(res, clientX, clientY) {
+
+                if (res == 'down') {
+                    prevX = currX;
+                    prevY = currY;
+                    currX = clientX - canvas.offsetLeft;
+                    currY = clientY - canvas.offsetTop;
+
+                    flag = true;
+                }
+
+                if (res == 'up' || res == "out") {
+                    flag = false;
+                }
+                if (res == 'move') {
+                    if (flag) {
+                        prevX = currX;
+                        prevY = currY;
+                        currX = clientX - canvas.offsetLeft;
+                        currY = clientY - canvas.offsetTop;
+
+                        hub.server.move(prevX, prevY, currX, currY);
+
+                        draw();
+                    }
+                }
+            }
+
+            function draw() {
+
+                context.beginPath();
+                context.moveTo(prevX, prevY);
+                context.lineTo(currX, currY);
+                context.lineWidth = 5;
+                context.stroke();
+                context.closePath();
+
+                prevX = currX;
+                prevY = currY;
+
+            }
+        });
+    </script>
+}
