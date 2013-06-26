@@ -4,11 +4,11 @@
     var prevX, prevY;
     var currX, currY;
     var flag;
-
     // Drawing stuff
 
     var hub = $.connection.drawHub;
-    $.connection.hub.start().done();
+    // Another ones won't work in IE
+    $.connection.hub.start({ transport: 'longPolling' }).done();
 
     hub.client.executeCommand = function (pX, pY, cX, cY) {
 
