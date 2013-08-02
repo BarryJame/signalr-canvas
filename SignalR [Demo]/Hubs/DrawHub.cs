@@ -11,7 +11,11 @@ namespace SignalRChat
     {
         public void Move(int prevX, int prevY, int currX, int currY)
         {
-            Clients.Others.executeCommand(prevX, prevY, currX, currY);
+            Clients.All.DrawFromHub(prevX, prevY, currX, currY);
+        }
+        public void DrawFromHub()
+        { 
+            // Will be fired in 
         }
     }
 }

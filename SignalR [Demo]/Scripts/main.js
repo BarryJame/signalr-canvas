@@ -10,7 +10,7 @@
     // Another ones won't work in IE
     $.connection.hub.start({ transport: 'longPolling' }).done();
 
-    hub.client.executeCommand = function (pX, pY, cX, cY) {
+    hub.client.drawFromHub = function (pX, pY, cX, cY) {
 
         prevX = pX;
         prevY = pY;
